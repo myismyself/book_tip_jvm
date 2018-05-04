@@ -30,4 +30,8 @@
 
 ### 二、对象访问
 #### 1.句柄访问：
+- 使用句柄访问会在java堆中划分一块内存作为句柄池，reference中存储的就是对象的句柄地址，而句柄中包含了对象实例数据和类型数据的各自地址信息。
 ![图示](https://github.com/myismyself/book_tip_jvm/blob/master/1525444405(1).png)
+#### 2.直接指针访问的方式
+- reference中存储的就是对象的地址值
+![图示](https://github.com/myismyself/book_tip_jvm/blob/master/1525444442(1).jpg)
