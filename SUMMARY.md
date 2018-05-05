@@ -35,3 +35,6 @@
 #### 2.直接指针访问的方式
 - reference中存储的就是对象的地址值
 ![图示](https://github.com/myismyself/book_tip_jvm/blob/master/1525444442(1).jpg)
+### 三、实战outofmemoryerror
+
+## 第三章：垃圾回收器和内存分配策略
