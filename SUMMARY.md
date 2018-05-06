@@ -48,5 +48,6 @@
 - -XX:SurvivorRatio用来设置新生代中eden空间和from空间的比例关系，注意from空间和to空间的大小是相同的。因此加入设置Xmn大小为10 而SurvivorRatio的比例为2那么eden空间的大小为10/(2+1+1)*2=5。
 - -XX:NewRatio，可以设置老年代和新生代的比例。
 - 设置的参数一览表
+![参数一览表](https://github.com/myismyself/book_tip_jvm/blob/master/param_all_jvm.jpg)
 
 ## 第三章：垃圾回收器和内存分配策略
