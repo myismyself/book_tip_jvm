@@ -37,4 +37,9 @@
 ![图示](https://github.com/myismyself/book_tip_jvm/blob/master/1525444442(1).jpg)
 ### 三、实战outofmemoryerror
 
+### 四、jvm的内存分配参数
+- Xmx 设置可以分配堆的最大内存     Runtime.getRuntime().maxMemory()：用来获得系统可用的最大的堆内存。
+- Xms 设置系统可用的最小堆空间，也就是系统启动时jvm所占据的系统内存大小。
+- 
+
 ## 第三章：垃圾回收器和内存分配策略
