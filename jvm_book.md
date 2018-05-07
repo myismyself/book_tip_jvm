@@ -60,3 +60,37 @@
 -    这个算法的基本思路是通过名为GC roots的对象作为起始点，从这些节点向下开始搜索，搜索所走过的路径成为引用链，当一个对象到gc roots 没有任何引用链，则证明这个对象不可用，被判定为可回收对象。
 java中可以作为GC roots对象包括以下几种：①虚拟机栈（栈帧中的本地变量表）中的引用对象  ②方法区中类静态属性引用的对象③方法区中常量引用的对象④本地方法栈中JNI(即一般说的Native方法)引用的对象。
 - 有关引用的描述分类
+![分类描述](https://github.com/myismyself/book_tip_jvm/blob/master/reference_example.png)
+引用的实际运用：
+1. What——什么是弱引用？
+Java中的弱引用具体指的是java.lang.ref.WeakReference<T>类，我们首先来看一下官方文档对它做的说明：
+弱引用对象的存在不会阻止它所指向的对象被垃圾回收器回收。弱引用最常见的用途是实现规范映射(canonicalizing mappings，比如哈希表）。
+假设垃圾收集器在某个时间点决定一个对象是弱可达的(weakly reachable)（也就是说当前指向它的全都是弱引用），这时垃圾收集器会清除所有指向该对象的弱引用，然后把这个弱可达对象标记为可终结(finalizable)的，这样它随后就会被回收。与此同时或稍后，垃圾收集器会把那些刚清除的弱引用放入创建弱引用对象时所指定的引用队列(Reference Queue)中。
+  ```
+实际上，Java中存在四种引用，它们由强到弱依次是：强引用、软引用、弱引用、虚引用。下面我们简单介绍下除弱引用外的其他三种引用：
+  ● 强引用（Strong Reference）：通常我们通过new来创建一个新对象时返回的引用就是一个强引用，若一个对象通过一系列强引用可到达，它就是强可达的(strongly reachable)，那么它就不被回收
+  ● 软引用（Soft Reference）：软引用和弱引用的区别在于，若一个对象是弱引用可达，无论当前内存是否充足它都会被回收，而软引用可达的对象在内存不充足时才会被回收，因此软引用要比弱引用“强”一些
+  ● 虚引用（Phantom Reference）：虚引用是Java中最弱的引用，那么它弱到什么程度呢？它是如此脆弱以至于我们通过虚引用甚至无法获取到被引用的对象，虚引用存在的唯一作用就是当它指向的对象被回收后，虚引用本身会被加入到引用队列中，用作记录它指向的对象已被回收。
+  ```
+Why——为什么使用弱引用？
+考虑下面的场景：现在有一个Product类代表一种产品，这个类被设计为不可扩展的，而此时我们想要为每个产品增加一个编号。一种解决方案是使用HashMap<Product, Integer>。于是问题来了，如果我们已经不再需要一个Product对象存在于内存中（比如已经卖出了这件产品），假设指向它的引用为productA，我们这时会给productA赋值为null，然而这时productA过去指向的Product对象并不会被回收，因为它显然还被HashMap引用着。所以这种情况下，我们想要真正的回收一个Product对象，仅仅把它的强引用赋值为null是不够的，还要把相应的条目从HashMap中移除。显然“从HashMap中移除不再需要的条目”这个工作我们不想自己完成，我们希望告诉垃圾收集器：在只有HashMap中的key在引用着Product对象的情况下，就可以回收相应Product对象了。显然，根据前面弱引用的定义，使用弱引用能帮助我们达成这个目的。我们只需要用一个指向Product对象的弱引用对象来作为HashMap中的key就可以了。
+How——如何使用弱引用？
+拿上面介绍的场景举例，我们使用一个指向Product对象的弱引用对象来作为HashMap的key，只需这样定义这个弱引用对象：
+  ```
+Product productA = new Product(...);
+WeakReference<Product> weakProductA = new WeakReference<>(productA);
+  ```
+现在，若引用对象weakProductA就指向了Product对象productA。那么我们怎么通过weakProduct获取它所指向的Product对象productA呢？很简单，只需要下面这句代码：
+  ```
+Product product = weakProductA.get();
+  ```
+实际上，对于这种情况，Java类库为我们提供了WeakHashMap类，使用和这个类，它的键自然就是弱引用对象，无需我们再手动包装原始对象。这样一来，当productA变为null时（表明它所引用的Product已经无需存在于内存中），这时指向这个Product对象的就是由弱引用对象weakProductA了，那么显然这时候相应的Product对象时弱可达的，所以指向它的弱引用会被清除，这个Product对象随即会被回收，指向它的弱引用对象会进入引用队列中。
+引用队列
+下面我们来简单地介绍下引用队列的概念。实际上，WeakReference类有两个构造函数：
+```
+//创建一个指向给定对象的弱引用
+WeakReference(T referent) 
+//创建一个指向给定对象并且登记到给定引用队列的弱引用
+WeakReference(T referent, ReferenceQueue<? super T> q)
+```
+我们可以看到第二个构造方法中提供了一个ReferenceQueue类型的参数，通过提供这个参数，我们便把创建的弱引用对象注册到了一个引用队列上，这样当它被垃圾回收器清除时，就会把它送入这个引用队列中，我们便可以对这些被清除的弱引用对象进行统一管理。
