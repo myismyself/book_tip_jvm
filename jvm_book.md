@@ -129,7 +129,7 @@ WeakReference(T referent, ReferenceQueue<? super T> q)
 - 碎片处理方式分为压缩式垃圾回收器和非压缩式垃圾回收器。
 - 按工作的内存区间分为新生代垃圾回收器和老年代垃圾回收器
 #### 评价GC策略的指标
-- ![指标介绍]()
+- ![指标介绍](https://github.com/myismyself/book_tip_jvm/blob/master/gc_zhibiao.jpg)
 #### 垃圾回收器的实现
 不同版本的虚拟机提供的垃圾回收器有很大的差别，这里主要说的是hot spot 虚拟机1.6版update22
 ##### 1.serial收集器
