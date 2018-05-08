@@ -114,4 +114,5 @@ WeakReference(T referent, ReferenceQueue<? super T> q)
 - 优点：效率较高，不会产生空间碎片。
 - 缺点:将内存分为了两部分，代价较高了点。
 - 应用
+![应用](https://github.com/myismyself/book_tip_jvm/blob/master/copy.png)
 
