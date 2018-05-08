@@ -134,4 +134,11 @@ WeakReference(T referent, ReferenceQueue<? super T> q)
 不同版本的虚拟机提供的垃圾回收器有很大的差别，这里主要说的是hot spot 虚拟机1.6版update22
 ##### 1.serial收集器
 - 历史最悠久 单线程垃圾收集器，回收时停掉所有用户的线程。
+##### 2.parNew收集器
+- 其实是serial的多线程版本，除了使用多线程进行垃圾回收外，其他与serial收集器一样。
+- 可设置参数-XX:ParallelGCThreads来限制垃圾收集的线程数。
+##### 3.Parallel Scavenge 收集器
+- 新生代收集器，多线程垃圾回收，使用复制算法
+- 目标是达到一个可控制的吞吐量。提供参数-XX:MaxGCPauseMillis控制最大垃圾回收停顿时间，停顿时间变短，会使垃圾收集变得频繁影响吞吐量。-XX：GCTimeTimeRatio垃圾时间占总时间的比值 直接设置吞吐量大小，如果设置为19，则允许的最大GC时间占总时间的比例就为1/（1+19）=5%，默认值为99 
+- 还有一个参数-XX:+UseAdaptiveSizePolicy。 当这个参数打开后就不需要手工设置新生代大小（-Xmn） ，eden和survivor的比例（-XX：SurvivorRatio），晋升老年代对象年龄（-XX:PretenureSizeThresHold）等参数。
 
