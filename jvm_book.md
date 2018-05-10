@@ -156,6 +156,17 @@ WeakReference(T referent, ReferenceQueue<? super T> q)
 #### 垃圾收集器参数总结
 ![参数一栏](https://github.com/myismyself/book_tip_jvm/blob/master/jvm_book_img/gc_params.jpg)
 
-
+### 三、对象的分配各回收策略
+#### 对象优先在eden区分配
+  大多数情况下，对象在新生的eden区中分配。当eden区没有足够的区域分配时就会触发minor Gc，即新生代的垃圾回收。
+#### 大对象优先进入老年代
+   经常出现大对象，导致内存还有不少空间时就提前触发垃圾回收来获取更多的空间来处理他们。因此可以通过设置-XX:PretenureSizeThreshold来设置对象超过多大直接进入老年代。但这个参数支队serial 和parNew 有效
+#### 长期存活的对象将直接进入老年代
+   虚拟机给每个对象定义一个年龄计数器，如果对象在eden出生，并且经历第一次minor Gc后任然存活，并且能够被survivor容纳，将被移动到survivor空间，年龄+1，当年龄增加到一定时（默认15），就会被晋升到老年代。可以通过-XX:MaxTenuringThreshold来设置晋升到老年代的阈值。但并非这个达到这个设定的值就能晋升到老年代，实际上这个年龄是虚拟机根据内存的使用情况动态计算的，在实际操作的时候会取这两者最小的来晋升到老年代。
+####  动态对象年龄判定
+   当survivor中相同年龄的所有对象的大小大于了survivor空间的一半，大于或等于该年龄的对象直接进入老年代。也可通过TargetSurvivorRatio来设置survivor空间的利用率，使其不在一半的时候进入老年代
+#### 空间担保分配
+   发生minor GC时，虚拟机会检测之前每次晋升到老年代的平均大小是否大于了老年代的剩余大小，如过大于就改为触发一次full GC ，如果小于则看HandlePromotionFailure是否设置了是否允许担保失败，如果允许就只进行minor GC 不允许就full GC 
+   
 
 
