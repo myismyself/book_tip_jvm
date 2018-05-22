@@ -18,6 +18,15 @@
 ###### 表
 - 表是由多个无符号数或其他表作为作为数据项构成的复合数据类型。常以_info结尾，class文件本质上就是一张表。
 - 以下构成class文件的数据项，由于没有任何分隔符，所以表中的数据项，无论是顺序还是数量都被严格限定的
-![构成class文件的数据项]()
+![构成class文件的数据项](https://github.com/myismyself/book_tip_jvm/blob/master/jvm_book_img/class_file_type.jpg)
+
+## class文件中的数据类型
+
+### 魔数（magic Number）和class文件的版本
+-  每个class 文件的头4个字节被称为魔数，唯一的作用是来确定这个文件是否为一个能被虚拟机接受的class文件。
+- 紧接着魔数后面的四个字节存储的是class文件的版本号：第5，6字节存储的是次版本号，7，8字节存储的是主版本号
+
+### 常量池
+
 
 
