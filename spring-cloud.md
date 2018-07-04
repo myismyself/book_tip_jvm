@@ -28,5 +28,24 @@
 ### 为服务消费者整合ribbon
 - @loadBalance 
 ### 使用java代码自定义ribbon配置
+- RibbonConfiguration @RibbonClient(name="  ",configuration=RibbonConfiguration.class)
+### 使用属性自定义ribbon配置
+- 支持的属性。配置的格式：<clientName>.ribbon.xx=xxx。
+- 如 microservice-provider-user.ribbon.NFLoadBalancerRuleClassName=com.netflix.loadbalancer.RandomRule
+ 
+### 脱离Eureka使用ribbon
+- 在服务掉用方的application.yml中配置  服务提供方服务名.ribbon.listOfServers:localhost:8000,localhost:8001(服务方的地址)。
+ 
+## 使用feign实现声明式的REST调用
+
+### 为服务整合feign
+- pom.xml中增加spring-cloud-starter-feign   创建一个接口并添加@FeignClient(name='')注解，name为任意一个客户端名称  新增controller调用接口中的方法，启动类中增加@EnableFeignClients注解
+### 自定义Feign配置
+- 和ribbon类似 参考默认配置，在FeignConfiguration类中定义相关配置 然后将其放到@FeignClient中的configuration
+### 手动创建Feign
+- 
+
+
+
 
 
