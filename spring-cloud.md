@@ -44,7 +44,33 @@
 - 和ribbon类似 参考默认配置，在FeignConfiguration类中定义相关配置 然后将其放到@FeignClient中的configuration
 ### 手动创建Feign
 - 
+## 使用hystrix实现微服务的容错处理
 
+### 实现容错的手段
+- 雪崩效应  基础服务故障导致级联故障
+- 如何容错   为网络请求设置超时，使用断路器模式（请求失败达到一定阈值，打开断路器，打开一段时间就半开状态，允许一个请求进去成功就关闭短路器）
+### hystrix实现延迟和容错
+- 包裹请求，跳闸机制，资源隔离，监控，回退机制，自我修复
+### 通用方式整合hystrix
+- 启动类增加@EnableCircuitBreak或@EnableHystrix
+- 给controller中调用服务的方法增加@HystrixCommand(fallbackMethod = "findUserFallBack",
+commandProperties = { @HystrixProperty(name="execution.isolation.thread.timeoutInMilliseconds",value = "5000"),   @HystrixProperty(name="metrics.rollingStats.timeInMilliseconds",value = "10000")},
+ threadPoolProperties = {@HystrixProperty(name="coreSize",value = "1"),@HystrixProperty(name="maxQueueSize",value = "10")})，findUserFallBack为请求被拒绝，失败，超时或者断路器打开就调用的自定义方法。
+ ### hystrix线程隔离策略与传播上下文
+ - hystrix有两种隔离策略：线程隔离和信号量隔离
+ - 使用在commandProperties中配置@HystrixProperty(name="execution.isolation.strategy",value = "THREAD/SEMAPHORE") 来实现线程隔离策略的选择
+ - 当调用负载量特别高时才用SEMAPHORE
+ ### 在feign中使用hystrix
+ - springcloud 默认feign整合了hystrix，只要hystrix在项目的classpath中feign默认就会用断路器包裹的所有方法
+ -  在feign的接口UserFeiginClient上@FeignClient（name="microservice-provider-user",fallback="FeiginClientFallBack.class"）
+ - 回退类FeiginClientFallBack需要实现FeignClientj接口
+ - 在在feign的接口上直接@Component   class FeiginClientFallBack implements UserFeiginClient 实现相应的方法
+ ### 通过Fallback Factory检查回退的原因
+ -  在feign的接口UserFeiginClient上@FeignClient（name="microservice-provider-user",fallbackFactory="FeiginClientFallBackFactory.class"）
+ -  在feign的接口UserFeiginClient上直接@Component   class FeiginClientFallBackFactory implements FallBackFactory<UserFeiginClient> 实现相应的方法
+ 
+### feign禁用hystrix
+- 借助feign的自定义配置，可以轻松为指定名称的feign客户端禁用hystrix 
 
 
 
