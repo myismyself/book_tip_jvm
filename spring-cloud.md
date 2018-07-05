@@ -72,6 +72,7 @@ commandProperties = { @HystrixProperty(name="execution.isolation.thread.timeoutI
 ### feign禁用hystrix
 - 借助feign的自定义配置，可以轻松为指定名称的feign客户端禁用hystrix 
 - ![feign禁用hystrix的操作](https://github.com/myismyself/book_tip_jvm/blob/master/springcloud_img/1530783939(1).png)
+- 全局禁用hystrix则在application.yml中配置feign.hystrix.enabled = false即可
 
 
 
