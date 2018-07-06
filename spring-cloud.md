@@ -73,6 +73,23 @@ commandProperties = { @HystrixProperty(name="execution.isolation.thread.timeoutI
 - 借助feign的自定义配置，可以轻松为指定名称的feign客户端禁用hystrix 
 - ![feign禁用hystrix的操作](https://github.com/myismyself/book_tip_jvm/blob/master/springcloud_img/1530783939(1).png)
 - 全局禁用hystrix则在application.yml中配置feign.hystrix.enabled = false即可
+### hystrix的监控
+- hystrix的hystrix-metrics-event-stream就可以将这些监控信息以text/event-stream的格式暴露给外部系统。
+- spring-cloud-starter-hystrix已经包含了此模块，结合actuator就可以以http://hostname:port/hystrix.stream 端点获得hystrix的监控信息。
+### feign项目的hystrix监控
+- 项目中引入spring-cloud-starter-hystrix  启动类增加@EnableCricuitBreaker  就可以通过/ystrix.stream获得监控信息
+###  使用hystrix Dashboard可视化监控数据
+- 引入spring-cloud-starter-hysterix-dashboard ,在启动类中增加@EnableHystrixDashboard
+- dashboard只能实现对单个实例的监控
+### 使用turbine实现聚合监控
+将所有hystrix.stream的端点数据聚合到turbine.stream上
+#### 使用turbine监控多个微服务
+- 在消费端引入spring-cloud-starter-turbine,并在其启动类上增加@EnableTurbing，并在application.yml中增加turbine.appConfig:服务名，服务名  turbine.clusterNameExpress="'default'"
+这样turbine就会在eureka service中招到上面appConfig配置的服务名服务，并聚合两个服务的监控数据，可通过/turbine.stream获取聚合的监控数据
+### 使用消息中间件收集数据
+- 安装rabbitMQ依赖ERlang，再安装RibbitMQ-server
+- 再到RibbitMQ的sbin目录执行ribbitmq-plugins enable ribbitmq-management，就可以访问localhost：15672进入ribbit的web页面
+- 具体查看mq改造微服务
 
 
 
